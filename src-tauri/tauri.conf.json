@@ -15,13 +15,13 @@
         "label": "main",
         "title": "WindowsNotch",
         "width": 420,
-        "height": 310,
+        "height": 46,
         "resizable": false,
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true,
         "skipTaskbar": true,
-        "center": true
+        "center": false
       }
     ],
     "security": {
