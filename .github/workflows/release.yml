@@ -1,0 +1,64 @@
+name: Publier une version Windows
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version à publier, par exemple 0.1.1"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Configure version and updater key
+        shell: pwsh
+        env:
+          APP_VERSION: ${{ inputs.version }}
+          UPDATE_PUBLIC_KEY: ${{ vars.TAURI_SIGNING_PUBLIC_KEY }}
+        run: |
+          if ($env:APP_VERSION -notmatch '^\d+\.\d+\.\d+([+-][0-9A-Za-z.-]+)?$') {
+            throw "La version doit suivre le format SemVer, par exemple 0.1.1."
+          }
+          if ([string]::IsNullOrWhiteSpace($env:UPDATE_PUBLIC_KEY)) {
+            throw "Il manque la variable de dépôt TAURI_SIGNING_PUBLIC_KEY."
+          }
+          $configPath = "src-tauri/tauri.conf.json"
+          $config = Get-Content $configPath -Raw | ConvertFrom-Json
+          $config.version = $env:APP_VERSION
+          $config.bundle.createUpdaterArtifacts = $true
+          $config.plugins.updater.pubkey = $env:UPDATE_PUBLIC_KEY
+          $config | ConvertTo-Json -Depth 100 | Set-Content -Path $configPath -Encoding utf8
+
+      - name: Build and publish signed release
+        uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: v${{ inputs.version }}
+          releaseName: WindowsNotch v${{ inputs.version }}
+          releaseBody: "Version ${{ inputs.version }} de WindowsNotch."
+          releaseDraft: false
+          prerelease: false
+          uploadUpdaterJson: true
+          args: --bundles nsis
