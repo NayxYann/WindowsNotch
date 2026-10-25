@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "Permissions for the WindowsNotch window",
   "windows": ["main"],
-  "permissions": ["core:default", "updater:default"]
+  "permissions": ["core:default", "updater:default", "process:allow-relaunch"]
 }
