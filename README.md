@@ -1,22 +1,27 @@
 # WindowsNotch
 
-Petite application Windows avec une notch interactive pour les commandes du média en cours et l'accès aux paramètres.
+Application Windows légère avec une notch interactive pour les commandes du média en cours et l'accès aux paramètres.
 
 ## Première version
 
-- Notch compacte, centrée en haut de l'écran et toujours au premier plan.
-- Ouverture au survol.
-- Détection des sessions média Windows (musique et vidéo) et affichage des informations disponibles.
-- Commandes lecture/pause, précédent et suivant.
-- Fenêtre de paramètres accessible depuis la notch.
-- Compilation Windows automatisée avec GitHub Actions.
+- Notch compacte et commandes de lecture des médias Windows.
+- Paramètres accessibles depuis la notch.
+- Vérification des mises à jour au démarrage et bouton d'installation dans les paramètres.
+- Publication de versions Windows signées depuis GitHub Actions.
 
-Le projet vise d'abord Windows 10/11 x64. Les fonctionnalités seront ajoutées par étapes afin de garder l'application légère.
+## Obtenir une version de test
 
-## Développement et installation
+Les builds de prévisualisation sont fabriquées automatiquement par GitHub Actions. Il n'est pas nécessaire d'installer les outils de développement sur le PC pour télécharger l'application.
 
-La compilation et les versions de test seront produites par GitHub Actions. Il ne sera pas nécessaire d'installer les outils de développement sur le PC pour télécharger et essayer une version publiée.
+## Publier une mise à jour
 
-## Mises à jour
+Une fois les secrets de signature configurés, ouvrir l'onglet **Actions**, choisir **Publier une version Windows**, cliquer sur **Run workflow** et saisir un nouveau numéro de version (par exemple `0.1.1`). GitHub compile l'application, crée une Release et publie le fichier de mise à jour signé. L'application installée détecte ensuite cette version et propose de l'installer.
 
-Les mises à jour intégrées seront activées après la configuration de la signature Tauri. La clé privée de signature doit être stockée dans les secrets GitHub Actions et ne doit jamais être commitée dans ce dépôt.
+## Signature de l'updater
+
+Le dépôt utilise deux valeurs de signature :
+
+- La variable de dépôt `TAURI_SIGNING_PUBLIC_KEY`, intégrée à l'application pour vérifier les téléchargements.
+- Le secret Actions `TAURI_SIGNING_PRIVATE_KEY`, utilisé uniquement pendant la publication.
+
+Si la clé privée a un mot de passe, le stocker dans le secret Actions `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Ne jamais committer ni partager la clé privée.
