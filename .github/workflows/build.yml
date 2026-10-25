@@ -80,7 +80,7 @@ jobs:
             }
           }
           "@
-          Add-Type -TypeDefinition $source -ReferencedAssemblies ([System.Drawing.Bitmap].Assembly.Location)
+          Add-Type -TypeDefinition $source -ReferencedAssemblies @([System.Drawing.Bitmap].Assembly.Location, [System.Drawing.Rectangle].Assembly.Location)
           New-Item -ItemType Directory -Force src-tauri/icons | Out-Null
           [WindowsNotchIcon]::Create((Join-Path (Get-Location) "src-tauri/icons/icon.ico"))
       - name: Build Windows installer
