@@ -22,10 +22,10 @@ async fn get_media_state() -> Result<Option<MediaState>, String> {
         .map_err(|error| error.to_string())?
         .await
         .map_err(|error| error.to_string())?;
-    let session = manager.GetCurrentSession().map_err(|error| error.to_string())?;
-    if session.is_null() {
-        return Ok(None);
-    }
+    let session = match manager.GetCurrentSession() {
+        Ok(session) => session,
+        Err(_) => return Ok(None),
+    };
 
     let properties = session
         .TryGetMediaPropertiesAsync()
@@ -51,10 +51,9 @@ async fn control_media(action: String) -> Result<(), String> {
         .map_err(|error| error.to_string())?
         .await
         .map_err(|error| error.to_string())?;
-    let session = manager.GetCurrentSession().map_err(|error| error.to_string())?;
-    if session.is_null() {
-        return Err("Aucun média actif.".into());
-    }
+    let session = manager
+        .GetCurrentSession()
+        .map_err(|_| "Aucun média actif.".to_string())?;
 
     let operation = match action.as_str() {
         "toggle" => session.TryTogglePlayPauseAsync(),
