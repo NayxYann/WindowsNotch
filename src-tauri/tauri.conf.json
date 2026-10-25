@@ -27,6 +27,16 @@
   "bundle": {
     "active": true,
     "targets": ["nsis"],
+    "createUpdaterArtifacts": true,
     "windows": { "nsis": { "displayLanguageSelector": false } }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "PUBLIC_KEY_TO_BE_ADDED_BEFORE_FIRST_RELEASE",
+      "endpoints": [
+        "https://github.com/NayxYann/WindowsNotch/releases/latest/download/latest.json"
+      ],
+      "windows": { "installMode": "passive" }
+    }
   }
 }
